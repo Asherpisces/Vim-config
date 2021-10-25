@@ -1,1 +1,1 @@
-# myVim
+# MyVim
