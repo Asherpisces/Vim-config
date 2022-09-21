@@ -2,97 +2,184 @@
 set number
 set mouse=a
 set tabstop=4
+set smarttab
 set shiftwidth=4
-set encoding=utf-8
+"set encoding=utf-8
 set termguicolors
-set cursorline
+set nu rnu
+set ignorecase              " Enable case-sensitive 
+"set guicursor+=a:-Cursor-blinkwait175-blinkoff150-blinkon175
+
+" Disable backup
+set nobackup
+set nowb
+set noswapfile
+
+" Optimize 
+set synmaxcol=200
+set lazyredraw
+au! BufNewFile,BufRead *.json set foldmethod=indent " Change foldmethod for specific filetype
+
+
 syntax on
+
 
 " ==== Plugin in here ====
 call plug#begin('~/local/share/nvim/plugged')
+
+" File search
+Plug 'junegunn/fzf', 
+    \ { 'do': { -> fzf#install() } }            " Fuzzy finder 
+Plug 'junegunn/fzf.vim'
+
+" Code intellisense
+Plug 'neoclide/coc.nvim', 
+    \ {'branch': 'release'}                     " Language server protocol (LSP) 
+Plug 'pappasam/coc-jedi',                     " Jedi language server 
+Plug 'alvan/vim-closetag'
+Plug 'mattn/emmet-vim' 
+Plug 'alvan/vim-closetag'                     " Auto close HTML/XML tag 
+    \ { 
+      \ 'do': 'yarn install '
+              \ .'--frozen-lockfile '
+              \ .'&& yarn build',
+      \ 'branch': 'main' 
+    \ }
+
+" Code syntax highlight
+Plug 'yuezk/vim-js'                           " Javascript
+Plug 'MaxMEllon/vim-jsx-pretty'               " JSX/React
+Plug 'jackguo380/vim-lsp-cxx-highlight'       " C/C++
+  
+" Debugging
+Plug 'puremourning/vimspector'                " Vimspector
+
+" Source code version control 
+Plug 'tpope/vim-fugitive'                     " Git infomation 
+Plug 'tpope/vim-rhubarb' 
+Plug 'airblade/vim-gitgutter'                 " Git show changes 
+Plug 'samoshkin/vim-mergetool'                " Git merge
+
+" {Status bar}
+"Plug 'vim-airline/vim-airline'
+"Plug 'vim-airline/vim-airline-themes'
+" {Theme}
+Plug 'tomasiser/vim-code-dark'
+Plug 'morhetz/gruvbox'
+Plug 'doums/darcula'
+Plug 'ryanoasis/vim-devicons'
 " {Status bar}
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-" {Theme}
-Plug 'dracula/vim', { 'as': 'dracula' }
-Plug 'joshdick/onedark.vim'
-Plug 'ayu-theme/ayu-vim'
-Plug 'tomasiser/vim-code-dark'
-" {Terminal}
-Plug 'voldikss/vim-floaterm'
-" {File Browser}
-Plug 'preservim/nerdTree'
-Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
-" {Syntax Highlight}
-Plug 'jackguo380/vim-lsp-cxx-highlight'
+
 " {Support Coding}
 Plug 'jiangmiao/auto-pairs'
-" {Minimap}
-Plug 'wfxr/minimap.vim'
-Plug 'wfxr/minimap.vim', {'do': ':!cargo install --locked code-minimap'}
+
+" {Tag Bar}
+Plug 'https://github.com/preservim/tagbar'
 
 " {Highlight Syntax}
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'uiiaoo/java-syntax.vim'
+Plug 'https://github.com/ap/vim-css-color'
 " {Sever Protocol Python}
 Plug 'dense-analysis/ale'
 " {Coc}
 " Use release branch (recommend)
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
+Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
 " Or build from source code by using yarn: https://yarnpkg.com
 Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
-" Debugging
-Plug 'puremourning/vimspector'
-" other
+
+" {Other}
 Plug 'alvan/vim-closetag'
-Plug 'mattn/emmet-vim' 
 Plug 'preservim/nerdcommenter' 					" Comment code 
+Plug 'tpope/vim-commentary'
 Plug 'liuchengxu/vista.vim' 					" Function tag bar 
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-fugitive'
 call plug#end()
 
-"Set Minimap
-let g:minimap_width = 10
-let g:minimap_auto_start = 1
-let g:minimap_auto_start_win_enter = 1
-"Set floaterm
-hi Floaterm guibg=Grey15
-hi FloatermBorder guifg=Orange guibg=DarkGreen
-let g:floaterm_position = 'topright'
-let g:floaterm_width = 0.6
-let g:floaterm_height = 0.6
-let g:floaterm_title = 'Hiep Terminal'
-let g:floaterm_rootmerkets = ['.pro']
-let g:lsp_cxx_hl_use_text_props = 1
-let g:ycm_clangd_binary_path = trim(system('brew --prefix llvm')).'/bin/clangd'
+
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+endif
+
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+"Goto
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>)coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+function! s:show_documentation()
+	if (index(['vim','help'], &filetype) >= 0)
+		execute 'h '.expand('<cword>')
+	elseif (coc#rpc#ready())
+		call CocActionAsync('doHover')
+	else 
+		execute '!' . &keywordprg . " " . expand('<cword>')
+	endif
+endfunction
+autocmd CursorHold * silent call CocActionAsync('highlight')
 
 
-map <silent>	<F5>	:FloatermNew<CR>
-map <silent>	<F7>	:below terminal<CR>
-"Set nerdTree
-map <silent>	<F2>	:NERDTree<CR>
-"Set minimap
-map <silent>	<F3>	:Minimap<CR>
-map <silent>	<F4>	:MinimapClose<CR>
-autocmd VimEnter * NERDTree
-" Exit Vim if NERDTree is the only window remaining in the only tab.
-autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+"Set Folder manager
+" We bind it to <leader>e here, feel free to change this
+nmap <leader>e :CocCommand explorer<CR>
+nmap <space>e <Cmd>CocCommand explorer<CR>
 
+" Option for coc !important 
+inoremap <silent><expr> <cr> coc#pum#visible() && coc#pum#info()['index'] != -1 ? coc#pum#confirm() : "\<C-g>u\<CR>"
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
 
+inoremap <silent><expr> <Tab>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
 
-" Default Onedark Theme
-set background=dark
-colorscheme codedark
-let g:one_allow_italic=1
+" use <c-space>for trigger completion
+inoremap <silent><expr> <c-space> coc#refresh()
+" Use <C-@> on vim
+inoremap <silent><expr> <c-@> coc#refresh()
 
-set termguicolors     " enable true colors support
-let ayucolor="light"  " for light version of theme
+inoremap <expr> <Tab> coc#pum#visible() ? coc#pum#next(1) : "\<Tab>"
+inoremap <expr> <S-Tab> coc#pum#visible() ? coc#pum#prev(1) : "\<S-Tab>"
+
+colorscheme darcula
+let g:lightline = { 'colorscheme': 'darculaOriginal' }
+let g:airline_theme= 'base16_default_dark'
+
 
 " Highlight Syntax in Java
 hi javaTypedef term=italic cterm=NONE ctermfg=LightGreen ctermbg=NONE gui=bold guifg=#60ff60 guibg=NONE
 
+" Font
+let g:enable_italic_font = 1
+let g:enable_bold_font = 1
+
+"highlight Comment cterm=italic gui=italic
+"split navigations
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+nnoremap <c-p> :Files<cr>
 
 
+" powerline symbols
+set splitbelow
+set splitright
 
+" Enable folding
+set foldmethod=indent
+set foldlevel=99
 
+" hi! LineNr  ctermfg=8 ctermbg=NONE guifg=#65737e guibg=NONE
 
