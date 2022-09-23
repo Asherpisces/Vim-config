@@ -23,7 +23,7 @@
 
 # How to use Vim?
 
-[Please Read Here](https://opensource.com/article/19/3/getting-started-vim)
+Please Read [Here](https://opensource.com/article/19/3/getting-started-vim)
 
 Thank you,
 
