@@ -19,7 +19,7 @@
 
 # Overview
 
-![picture](./picture.png)
+![picture](./Picture.png)
 
 # How to use Vim?
 
