@@ -17,9 +17,6 @@
 % git clone https://github.com/thaihiep232002/Vim-config.git
 ```
 
-# Overview
-
-![picture](./overview.png)
 
 # How to use Vim?
 
