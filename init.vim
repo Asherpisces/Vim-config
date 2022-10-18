@@ -15,10 +15,12 @@ set nobackup
 set nowb
 set noswapfile
 
+
 " Optimize 
 set synmaxcol=200
 set lazyredraw
 au! BufNewFile,BufRead *.json set foldmethod=indent " Change foldmethod for specific filetype
+
 
 
 syntax on
@@ -27,16 +29,15 @@ syntax on
 " ==== Plugin in here ====
 call plug#begin('~/local/share/nvim/plugged')
 
-" File search
-Plug 'junegunn/fzf', 
-    \ { 'do': { -> fzf#install() } }            " Fuzzy finder 
-Plug 'junegunn/fzf.vim'
-
 " Code intellisense
-Plug 'neoclide/coc.nvim', 
-    \ {'branch': 'release'}                     " Language server protocol (LSP) 
+
+Plug 'neoclide/coc.nvim',
+\ {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
+
+Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
+Plug 'dense-analysis/ale'
 Plug 'pappasam/coc-jedi',                     " Jedi language server 
-Plug 'alvan/vim-closetag'
 Plug 'mattn/emmet-vim' 
 Plug 'alvan/vim-closetag'                     " Auto close HTML/XML tag 
     \ { 
@@ -60,44 +61,37 @@ Plug 'tpope/vim-rhubarb'
 Plug 'airblade/vim-gitgutter'                 " Git show changes 
 Plug 'samoshkin/vim-mergetool'                " Git merge
 
-" {Status bar}
-"Plug 'vim-airline/vim-airline'
-"Plug 'vim-airline/vim-airline-themes'
-" {Theme}
+" Status bar
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
+" Themes
 Plug 'tomasiser/vim-code-dark'
 Plug 'morhetz/gruvbox'
 Plug 'doums/darcula'
 Plug 'ryanoasis/vim-devicons'
-" {Status bar}
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'joshdick/onedark.vim'
 
-" {Support Coding}
+" Support Coding
 Plug 'jiangmiao/auto-pairs'
+Plug 'preservim/nerdcommenter'          " Comment code 
+Plug 'tpope/vim-commentary'
+Plug 'liuchengxu/vista.vim'           " Function tag bar 
 
-" {Tag Bar}
+" Tag Bar
 Plug 'https://github.com/preservim/tagbar'
 
-" {Highlight Syntax}
+" Highlight Syntax
 Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'uiiaoo/java-syntax.vim'
 Plug 'https://github.com/ap/vim-css-color'
-" {Sever Protocol Python}
-Plug 'dense-analysis/ale'
-" {Coc}
-" Use release branch (recommend)
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
-" Or build from source code by using yarn: https://yarnpkg.com
-Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
 
-" {Other}
-Plug 'alvan/vim-closetag'
-Plug 'preservim/nerdcommenter' 					" Comment code 
-Plug 'tpope/vim-commentary'
-Plug 'liuchengxu/vista.vim' 					" Function tag bar 
+" Other
+
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
+Plug 'itchyny/lightline.vim'
+Plug 'codota/tabnine-vim'
 call plug#end()
 
 
@@ -126,7 +120,6 @@ function! s:show_documentation()
 endfunction
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
-
 "Set Folder manager
 " We bind it to <leader>e here, feel free to change this
 nmap <leader>e :CocCommand explorer<CR>
@@ -152,9 +145,14 @@ inoremap <silent><expr> <c-@> coc#refresh()
 inoremap <expr> <Tab> coc#pum#visible() ? coc#pum#next(1) : "\<Tab>"
 inoremap <expr> <S-Tab> coc#pum#visible() ? coc#pum#prev(1) : "\<S-Tab>"
 
-colorscheme darcula
-let g:lightline = { 'colorscheme': 'darculaOriginal' }
-let g:airline_theme= 'base16_default_dark'
+colorscheme onedark
+
+hi Normal ctermbg=NONE
+hi NonText ctermbg=NONE
+hi Normal guibg=NONE
+hi Normal guibg=NONE ctermbg=NONE
+" let g:lightline = { 'colorscheme': 'darculaOriginal' }
+" let g:airline_theme= 'base16_default_dark'
 
 
 " Highlight Syntax in Java
@@ -182,4 +180,78 @@ set foldmethod=indent
 set foldlevel=99
 
 " hi! LineNr  ctermfg=8 ctermbg=NONE guifg=#65737e guibg=NONE
+
+" Coc explorer Config
+let g:coc_explorer_global_presets = {
+\   '.vim': {
+\     'root-uri': '~/.vim',
+\   },
+\   'cocConfig': {
+\      'root-uri': '~/.config/coc',
+\   },
+\   'tab': {
+\     'position': 'tab',
+\     'quit-on-open': v:true,
+\   },
+\   'tab:$': {
+\     'position': 'tab:$',
+\     'quit-on-open': v:true,
+\   },
+\   'floating': {
+\     'position': 'floating',
+\     'open-action-strategy': 'sourceWindow',
+\   },
+\   'floatingTop': {
+\     'position': 'floating',
+\     'floating-position': 'center-top',
+\     'open-action-strategy': 'sourceWindow',
+\   },
+\   'floatingLeftside': {
+\     'position': 'floating',
+\     'floating-position': 'left-center',
+\     'floating-width': 50,
+\     'open-action-strategy': 'sourceWindow',
+\   },
+\   'floatingRightside': {
+\     'position': 'floating',
+\     'floating-position': 'right-center',
+\     'floating-width': 50,
+\     'open-action-strategy': 'sourceWindow',
+\   },
+\   'simplify': {
+\     'file-child-template': '[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1]'
+\   },
+\   'buffer': {
+\     'sources': [{'name': 'buffer', 'expand': v:true}]
+\   },
+\ }
+
+" Use preset argument to open it
+nmap <space>ed <Cmd>CocCommand explorer --preset .vim<CR>
+nmap <space>ef <Cmd>CocCommand explorer --preset floating<CR>
+nmap <space>ec <Cmd>CocCommand explorer --preset cocConfig<CR>
+nmap <space>eb <Cmd>CocCommand explorer --preset buffer<CR>
+
+" List all presets
+nmap <space>el <Cmd>CocList explPresets<CR>
+
+" ==================== LIGHT LINE ==================
+set noshowmode
+let g:lightline = {
+      \ 'colorscheme': 'ayu_mirage',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'fugitive#head'
+      \ },
+      \ }
+
+
+
+
+
+
+
 
