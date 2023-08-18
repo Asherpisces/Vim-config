@@ -8,18 +8,19 @@ set shiftwidth=4
 set termguicolors
 set nu rnu
 set ignorecase              " Enable case-sensitive 
-"set guicursor+=a:-Cursor-blinkwait175-blinkoff150-blinkon175
+set guicursor+=a:-Cursor-blinkwait175-blinkoff150-blinkon175
 
 " Disable backup
 set nobackup
 set nowb
 set noswapfile
+set termguicolors
 
 
-" Optimize 
-set synmaxcol=200
-set lazyredraw
-au! BufNewFile,BufRead *.json set foldmethod=indent " Change foldmethod for specific filetype
+" " Optimize 
+" set synmaxcol=200
+" set lazyredraw
+" au! BufNewFile,BufRead *.json set foldmethod=indent " Change foldmethod for specific filetype
 
 
 
@@ -47,11 +48,16 @@ Plug 'alvan/vim-closetag'                     " Auto close HTML/XML tag
       \ 'branch': 'main' 
     \ }
 
+" File Manager
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 " Code syntax highlight
 Plug 'yuezk/vim-js'                           " Javascript
 Plug 'MaxMEllon/vim-jsx-pretty'               " JSX/React
 Plug 'jackguo380/vim-lsp-cxx-highlight'       " C/C++
-  
+Plug 'udalov/kotlin-vim'					  " Kotlin
+Plug 'StanAngeloff/php.vim'
+
 " Debugging
 Plug 'puremourning/vimspector'                " Vimspector
 
@@ -69,14 +75,16 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'tomasiser/vim-code-dark'
 Plug 'morhetz/gruvbox'
 Plug 'doums/darcula'
-Plug 'ryanoasis/vim-devicons'
+Plug 'ryanoasis/vim-devicons' " Icon
 Plug 'joshdick/onedark.vim'
-
+Plug 'bluz71/vim-nightfly-colors'
+Plug 'ayu-theme/ayu-vim'
 " Support Coding
 Plug 'jiangmiao/auto-pairs'
 Plug 'preservim/nerdcommenter'          " Comment code 
 Plug 'tpope/vim-commentary'
 Plug 'liuchengxu/vista.vim'           " Function tag bar 
+Plug 'nono/vim-handlebars' 		" Handlebars 
 
 " Tag Bar
 Plug 'https://github.com/preservim/tagbar'
@@ -90,10 +98,34 @@ Plug 'https://github.com/ap/vim-css-color'
 
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
-Plug 'itchyny/lightline.vim'
-Plug 'codota/tabnine-vim'
+Plug 'preservim/nerdtree'
 call plug#end()
 
+" ===================== VIM AIRLINE =================
+"
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+  
+"" powerline symbols
+let g:airline_left_sep = ''
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = ''
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = 'ln'
+let g:airline_symbols.maxlinenr = ''
+let g:airline_symbols.dirty='⚡'
+let g:airline_symbols.colnr='col'"
+
+
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#hunks#enabled=0
+let g:airline#extensions#hunks#coc_git = 1
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline#extensions#tabline#left_alt_sep = '|'
+let g:airline#extensions#tabline#formatter = 'unique_tail'
 
 if has('nvim')
   inoremap <silent><expr> <c-space> coc#refresh()
@@ -145,7 +177,8 @@ inoremap <silent><expr> <c-@> coc#refresh()
 inoremap <expr> <Tab> coc#pum#visible() ? coc#pum#next(1) : "\<Tab>"
 inoremap <expr> <S-Tab> coc#pum#visible() ? coc#pum#prev(1) : "\<S-Tab>"
 
-colorscheme onedark
+let ayucolor="dark"   " for dark version of theme
+colorscheme ayu
 
 hi Normal ctermbg=NONE
 hi NonText ctermbg=NONE
@@ -178,6 +211,8 @@ set splitright
 " Enable folding
 set foldmethod=indent
 set foldlevel=99
+
+let g:mustache_abbreviations = 1 " for handlebar
 
 " hi! LineNr  ctermfg=8 ctermbg=NONE guifg=#65737e guibg=NONE
 
@@ -226,6 +261,8 @@ let g:coc_explorer_global_presets = {
 \   },
 \ }
 
+
+
 " Use preset argument to open it
 nmap <space>ed <Cmd>CocCommand explorer --preset .vim<CR>
 nmap <space>ef <Cmd>CocCommand explorer --preset floating<CR>
@@ -235,23 +272,22 @@ nmap <space>eb <Cmd>CocCommand explorer --preset buffer<CR>
 " List all presets
 nmap <space>el <Cmd>CocList explPresets<CR>
 
-" ==================== LIGHT LINE ==================
-set noshowmode
-let g:lightline = {
-      \ 'colorscheme': 'ayu_mirage',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'fugitive#head'
-      \ },
-      \ }
+" " ==================== LIGHT LINE ==================
+" set noshowmode
+" let g:lightline = {
+"       \ 'colorscheme': 'ayu_mirage',
+"       \ 'active': {
+"       \   'left': [ [ 'mode', 'paste' ],
+"       \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+"       \ },
+"       \ 'component_function': {
+"       \   'gitbranch': 'fugitive#head'
+"       \ },
+"       \ }
 
-
-
-
-
-
-
-
+" NERDTREE configs
+"
+nnoremap <leader>n :NERDTreeFocus<CR>
+nnoremap <C-n> :NERDTree<CR>
+nnoremap <C-t> :NERDTreeToggle<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
